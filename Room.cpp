@@ -1,8 +1,9 @@
 #include <iostream>
-#include "room.h"
+#include "Room.h"
 #include <vector>
 #include <map>
 #include <cstring>
+#include "main.cpp"
 
 using namespace std;
 
@@ -11,12 +12,8 @@ Room::Room()
   roomName = new char[100];
   map<int, int> roomMap;
   vector<Item*> itemsInRoom;
+  int index;
 }
-
-struct Item
-{
-  char name[100];
-};
 
 vector<Item*> Room::getItems()
 {
@@ -30,18 +27,9 @@ char* Room::getName()
 
 void Room::removeItem(char[100] itemName) 
 {
-  bool itemExists = false;
-  for(int i = 0; i < itemsInRoom.size(); i++)
+  if(containsItem(itemName) == true)
   {
-    if(strcmp(itemsInRoom[i]->name, itemName) == 0)
-    {
-      itemExists = true;
-      itemsInRoom.erase(itemsInRoom.begin + 1);
-    }
-  }
-  if(itemExists == false)
-  {
-    cout << roomName << "does not contain a/an " << itemName << endl;
+    itemsInRoom.erase(itemsInRoom.begin + index);
   }
 }
 
@@ -49,3 +37,17 @@ void Room::addItem(Item* item)
 {
   itemsInRoom.push_back(item);
 }
+
+bool Room::containsItem(char[100] itemName)
+{
+  for(int i = 0; i < itemsInRoom.size(); i++)
+  {
+    if(strcmp(itemsInRoom[i]->name, itemName) == 0)
+    {
+      return true;
+      index = 1;
+    }
+  }
+  return false;
+}
+

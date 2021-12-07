@@ -1,10 +1,15 @@
 #include <iostream>
-#include "room.cpp"
+#include "Room.h"
 #include <vector>
 #include <map>
 #include <cstring>
 
 using namespace std;
+
+struct Item
+{
+  char name[100];
+};
 
 void pickUpItem(Room* currentRoom, vector<Item*>& inventory);
 
@@ -49,20 +54,12 @@ int main()
 
 void pickUpItem(Room* currentRoom, vector<Item*>& inventory)
 {
-  bool itemExists = false;
   char itemName[100];
   cout << "enter name of item you want to pick up" << endl;
-  for(int i = 0; i < currentRoom->getItems().size())
+  if(currentRoom->containsItem(itemName))
   {
-    if(strcmp(currentRoom->getItems()[i]->name, itemName) == 0)
-    {
-      itemExists = true;
-      inventory.push_back(currentRoom->getItems()[i]);
-      return;
-    }
+    inventory.push_back(currentRoom->getItems()[index]);
+    return;
   }
-  if(itemExists == false)
-  {
-    cout << "there is no " << itemName << "in this room" << endl;
-  }
+  cout << "this item does not exist" << endl;
 }
