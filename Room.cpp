@@ -10,16 +10,21 @@ Room::Room()
 {
   roomName = new char[100];
   int index = 0;
-  map<char[100], Room> roomMap;
+  map<char[100], Room*> roomMap;
   vector<Room::Item*> itemsInRoom;
-  vector<char[100]> exitList;
+  vector<char*> roomExits;
   description = new char[1000];
+}
+
+void Room::setName(char* name)
+{
+  roomName = name;
 }
 
 void Room::setExit(char* direction, Room* room)
 {
   roomMap.emplace(direction, room);
-  exitList.push_back(direction);
+  roomExits.push_back(direction);
 }
 
 void Room::setDescription(char* newDescription)
@@ -27,13 +32,15 @@ void Room::setDescription(char* newDescription)
   description = newDescription;
 }
 
-void Room::printDescription()
+//prints room name, description, exits, and items
+void Room::printInfo()
 {
+  cout << "You are in " << roomName << endl;
   cout << description << endl;
   cout << "Exits: ";
-  for(int i = 0; i < exitList.size(); i++)
+  for(int i = 0; i < roomExits.size(); i++)
   {
-    cout << exitList[i] << ", ";
+    cout << roomExits[i] << ", ";
   }
   cout << endl;
   cout << "Items: ";
@@ -46,11 +53,6 @@ void Room::printDescription()
 vector<Room::Item*> Room::getItems()
 {
   return itemsInRoom;
-}
-
-char* Room::getName()
-{
-  return roomName;
 }
 
 //will remove an item from the room if it exists. if item does not exist, will return false
@@ -69,7 +71,7 @@ bool Room::itemRemoved(char* itemName)
   return false;
 }
 
-void Room::addItem(Item* item)
+void Room::addItem(Room::Item* item)
 {
   itemsInRoom.push_back(item);
 }

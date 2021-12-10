@@ -9,7 +9,7 @@ using namespace std;
 
 struct Item
 {
-  char name[100];
+  name = new char[100];
 };
 
 class Room
@@ -22,17 +22,17 @@ class Room
     Room();
     char* roomName;
     int index;
-    map<int, int> roomMap;
+    map<char[100], Room*> roomMap;
     vector<Room::Item*> itemsInRoom;
-    vector<char[100]> exitList;
+    vector<char*> roomExits;
     char* description;
+    void setName(char*);
     void setExit(char* direction, Room* room);
     void setDescription(char* description);
-    void printDescription();
+    void printInfo();
     vector<Room::Item*> getItems();
-    char* getName();
     bool itemRemoved(char* itemName);
-    void addItem(Item* item);
+    void addItem(Room::Item* item);
 };
 
 #endif
