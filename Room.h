@@ -3,21 +3,36 @@
 
 #include <iostream>
 #include <vector> 
+#include <map>
 
 using namespace std;
 
+struct Item
+{
+  char name[100];
+};
+
 class Room
 {
-  public:
+  public:  
+    struct Item
+    {
+      char name[100];
+    };
     Room();
-    vector<Item*> getItems();
-    int index;
-    char* getName();
-    void removeItem(char[100] itemName);
-    void addItem(Item* item);
-    bool containsItem(char[100] itemName);
-    vector<Item*> itemsInRoom();
     char* roomName;
+    int index;
+    map<int, int> roomMap;
+    vector<Room::Item*> itemsInRoom;
+    vector<char[100]> exitList;
+    char* description;
+    void setExit(char* direction, Room* room);
+    void setDescription(char* description);
+    void printDescription();
+    vector<Room::Item*> getItems();
+    char* getName();
+    bool itemRemoved(char* itemName);
+    void addItem(Item* item);
 };
 
 #endif
