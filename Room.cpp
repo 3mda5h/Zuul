@@ -6,37 +6,29 @@
 
 using namespace std;
 
-Room::Room()
+Room::Room(const char* name, const char* description)
 {
   roomName = new char[100];
+  strcpy(roomName, name);
+  roomDescription = new char[1000];
+  strcpy(roomDescription, description);
   int index = 0;
-  map<char[100], Room*> roomMap;
+  map<const char*, Room*> roomMap;
   vector<Room::Item*> itemsInRoom;
-  vector<char*> roomExits;
-  description = new char[1000];
+  vector<const char*> roomExits;
 }
 
-void Room::setName(char* name)
-{
-  roomName = name;
-}
-
-void Room::setExit(char* direction, Room* room)
+void Room::setExit(const char* direction, Room* room)
 {
   roomMap.emplace(direction, room);
   roomExits.push_back(direction);
-}
-
-void Room::setDescription(char* newDescription)
-{
-  description = newDescription;
 }
 
 //prints room name, description, exits, and items
 void Room::printInfo()
 {
   cout << "You are in " << roomName << endl;
-  cout << description << endl;
+  cout << roomDescription << endl;
   cout << "Exits: ";
   for(int i = 0; i < roomExits.size(); i++)
   {
@@ -75,5 +67,6 @@ void Room::addItem(Room::Item* item)
 {
   itemsInRoom.push_back(item);
 }
+
 
 

@@ -6,32 +6,37 @@
 
 using namespace std;
 
-Room* newRoom(char* name, char* description);
-Room::Item* newItem(char* name);
+Room::Item* newItem(const char* name);
 void pickUpItem(Room* currentRoom, vector<Room::Item*>& inventory);
-void dropItem(Room* currentRoom, vector<Room::Item*>& inventory);
+void dropItem(Room* currentRoom, vector<Room::Item*>& inventory, int &index);
 void move(Room* currentRoom);
+bool inventoryContains(vector<Room::Item*>& inventory, char* itemName, int &index);
 
 int main() 
 {
   vector<Room::Item*> inventory;
-  Room* currentRoom = new Room();
+  Room* currentRoom;
+  int inventoryIndex;
   bool running = true;
   char input[100];
  
-  //creat rooms
-  Room* oneTwenty = newRoom("room 1-20", "You are haning out in room 1-20. You are 100% doing C++ programming and not bio homework.");
-  Room* oneHall = newRoom("one hall", "extremely crowded");
+  //create rooms
+  Room* oneTwenty = new Room("room 1-20", "You are haning out in room 1-20. You are 100% doing C++ programming and not bio homework.");
+  Room* oneHall = new Room("one hall", "extremely crowded");
+  Room* oneNine = new Room("1-9", "you enter the room and instantly run away screaming. IB biology is very scary");
   
   //set exits
-  oneTwenty->setExit("north", oneHall); //idk if it's actually north
+  oneTwenty->setExit("NORTH", oneHall); //idk if it's actually north
   
   //set items
-  oneTwenty->addItem(newItem("computer"));
+  oneTwenty->addItem(newItem("COMPUTER"));
   
   currentRoom = oneTwenty;
   do
   {
+    //win & lose conditions
+
+
     currentRoom->printInfo();
     cout << "enter PICK UP, DROP, MOVE, or QUIT" << endl;
     cin.getline(input, 100);
@@ -42,7 +47,7 @@ int main()
       }
       if(strcmp(input, "DROP") == 0)
       {
-        dropItem(currentRoom, inventory);
+        dropItem(currentRoom, inventory, inventoryIndex);
       }
       if(strcmp(input, "MOVE") == 0)
       {
@@ -56,18 +61,12 @@ int main()
   } while(running == true);
 } 
 
-Room* newRoom(char* name, char* description)
-{
-  Room* room = new Room(); 
-  room->setName(name);
-  room->setDescription(description);
-}
-
 //creates a new item
-Room::Item* newItem(char* itemName)
+Room::Item* newItem(const char* itemName)
 {
   Room::Item* item = new Room::Item();
   strcpy(item->name, itemName);
+  return item;
 }
 
 //adds item to player inventory, removes it from the room 
@@ -85,19 +84,16 @@ void pickUpItem(Room* currentRoom, vector<Room::Item*>& inventory)
 }
 
 //removes item from player inventory, adds it to the current room
-void dropItem(Room* currentRoom, vector<Room::Item*>& inventory)
+void dropItem(Room* currentRoom, vector<Room::Item*>& inventory, int &index)
 {
   char itemName[100];
   cout << "enter the name of the item you want to drop" << endl;
   cin.getline(itemName, 100);
-  for(int i = 0; i < inventory.size(); i++)
+  if(inventoryContains(inventory, itemName, index) == true)
   {
-    if(strcmp(inventory[i]->name, itemName) == 0)
-    {
-      inventory.erase(inventory.begin() + currentRoom->index);
-      currentRoom->addItem(inventory[currentRoom->index]);
-      return;
-    }
+    inventory.erase(inventory.begin() + currentRoom->index);
+    currentRoom->addItem(inventory[currentRoom->index]);
+    return;
   }
   cout << "this item is not in your inventory" << endl;
 }
@@ -112,9 +108,22 @@ void move(Room* currentRoom)
   {
     if(strcmp(currentRoom->roomExits[i], input) == 0)
     {
-      map<char[100], Room*> temp;
+      map<const char*, Room*> temp;
       temp = currentRoom->roomMap;
       currentRoom = temp.at(input);
     }
   }
+}
+
+bool inventoryContains(vector<Room::Item*>& inventory, char* itemName, int &index)
+{
+  for(int i = 0; i < inventory.size(); i++)
+  {
+    if(strcmp(inventory[i]->name, itemName) == 0)
+    {
+      return true;
+      index = i;
+    }
+  }
+  return false;
 }
