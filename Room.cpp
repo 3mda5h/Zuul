@@ -12,7 +12,6 @@ Room::Room(const char* name, const char* description)
   strcpy(roomName, name);
   roomDescription = new char[1000];
   strcpy(roomDescription, description);
-  int index = 0;
   map<const char*, Room*> roomMap;
   vector<Room::Item*> itemsInRoom;
   vector<const char*> roomExits;
@@ -32,14 +31,36 @@ void Room::printInfo()
   cout << "Exits: ";
   for(int i = 0; i < roomExits.size(); i++)
   {
-    cout << roomExits[i] << ", ";
+    if(i == roomExits.size() - 1) //last item no comma hehehehe
+    {
+      cout << roomExits[i];
+    }
+    else
+    {
+      cout << roomExits[i] << ", ";
+    }
   }
   cout << endl;
   cout << "Items: ";
-  for(int i = 0; i < itemsInRoom.size(); i++)
+  if(itemsInRoom.size() > 0)
   {
-    cout << itemsInRoom[i] << ", ";
+    for(int i = 0; i < itemsInRoom.size(); i++)
+    {
+      if(i == itemsInRoom.size() - 1) //last item no comma yes i care this much
+      {
+        cout << itemsInRoom[i]->name;
+      }
+      else
+      {
+        cout << itemsInRoom[i]->name << ", ";
+      }
+    }  
   }
+  else
+  {
+    cout << "none";
+  }
+  cout << endl;
 }
 
 vector<Room::Item*> Room::getItems()
@@ -48,19 +69,21 @@ vector<Room::Item*> Room::getItems()
 }
 
 //will remove an item from the room if it exists. if item does not exist, will return false
-bool Room::itemRemoved(char* itemName) 
+void Room::removeItem(int index) 
+{
+  itemsInRoom.erase(itemsInRoom.begin() + index);
+}
+
+int Room::containsItem(char* itemName) //if contains item, returns its index. if not, returns -1. maybe this is a stupid way of doing this but the thing is I don't really care :D
 {
   for(int i = 0; i < itemsInRoom.size(); i++)
   {
     if(strcmp(itemsInRoom[i]->name, itemName) == 0)
     {
-      itemsInRoom.erase(itemsInRoom.begin() + i);
-      index = i;
-      return true;
+      return i;
     }
   }
-  cout << "this item does not exist";
-  return false;
+  return -1;
 }
 
 void Room::addItem(Room::Item* item)

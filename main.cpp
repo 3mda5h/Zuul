@@ -8,9 +8,10 @@ using namespace std;
 
 Room::Item* newItem(const char* name);
 void pickUpItem(Room* currentRoom, vector<Room::Item*>& inventory);
-void dropItem(Room* currentRoom, vector<Room::Item*>& inventory, int &index);
+void dropItem(Room* currentRoom, vector<Room::Item*>& inventory);
 void move(Room* currentRoom);
-bool inventoryContains(vector<Room::Item*>& inventory, char* itemName, int &index);
+int inventoryContains(vector<Room::Item*>& inventory, const char* itemName);
+void printInventory(vector<Room::Item*> inventory);
 
 int main() 
 {
@@ -32,32 +33,45 @@ int main()
   oneTwenty->addItem(newItem("COMPUTER"));
   
   currentRoom = oneTwenty;
+  currentRoom->printInfo();
   do
   {
-    //win & lose conditions
-
-
-    currentRoom->printInfo();
-    cout << "enter PICK UP, DROP, MOVE, or QUIT" << endl;
-    cin.getline(input, 100);
+    //win & lose conditions hehehehe
+    if(currentRoom != oneTwenty && inventoryContains(inventory, "COMPUTER") < -1)
     {
+      cout << "you just stole a computer from 1-20!! D:< That is a crime. You lose" << endl;
+      running = false;
+    }
+    do
+    {
+      //for case sensitivity as usual
+      cout << "type PICK UP, DROP, MOVE, INVENTORY or QUIT" << endl;
+      cin.getline(input, 100);
+      for(int i = 0; i < strlen(input); i++)
+      {
+        input[i] = toupper(input[i]);
+      }
       if(strcmp(input, "PICK UP") == 0)
       {
         pickUpItem(currentRoom, inventory);
       }
       if(strcmp(input, "DROP") == 0)
       {
-        dropItem(currentRoom, inventory, inventoryIndex);
+        dropItem(currentRoom, inventory);
       }
       if(strcmp(input, "MOVE") == 0)
       {
         move(currentRoom);
       }
+      if(strcmp(input, "INVENTORY") == 0)
+      {
+        printInventory(inventory);
+      }
       if(strcmp(input, "QUIT") == 0)
       {
         running = false;
       }
-    }
+    } while (strcmp(input, "PICK UP") != 0 && strcmp(input, "DROP") != 0 && strcmp(input, "MOVE") != 0 && strcmp(input, "INVENTORY") != 0 && strcmp(input, "QUIT"));
   } while(running == true);
 } 
 
@@ -75,24 +89,32 @@ void pickUpItem(Room* currentRoom, vector<Room::Item*>& inventory)
   char itemName[100];
   cout << "enter the name of the item you want to pick up" << endl;
   cin.getline(itemName, 100);
-  if(currentRoom->itemRemoved(itemName) == true)
+  for(int i = 0; i < strlen(itemName); i++) //function for this?
   {
-    vector<Room::Item*> temp = currentRoom->getItems();
-    inventory.push_back(temp[currentRoom->index]);
+    itemName[i] = toupper(itemName[i]);
+  }
+  int index = currentRoom->containsItem(itemName);
+  if(index > -1)
+  {
+    inventory.push_back(currentRoom->getItems()[index]);
+    currentRoom->removeItem(index);
+    cout << "item picked up" << endl;
     return;
   }
+  cout << "this item does not exist" << endl;
 }
 
 //removes item from player inventory, adds it to the current room
-void dropItem(Room* currentRoom, vector<Room::Item*>& inventory, int &index)
+void dropItem(Room* currentRoom, vector<Room::Item*>& inventory)
 {
   char itemName[100];
   cout << "enter the name of the item you want to drop" << endl;
   cin.getline(itemName, 100);
-  if(inventoryContains(inventory, itemName, index) == true)
+  int index = inventoryContains(inventory, itemName);
+  if( index > -1)
   {
-    inventory.erase(inventory.begin() + currentRoom->index);
-    currentRoom->addItem(inventory[currentRoom->index]);
+    inventory.erase(inventory.begin() + index);
+    currentRoom->addItem(inventory[index]);
     return;
   }
   cout << "this item is not in your inventory" << endl;
@@ -111,19 +133,44 @@ void move(Room* currentRoom)
       map<const char*, Room*> temp;
       temp = currentRoom->roomMap;
       currentRoom = temp.at(input);
+      currentRoom->printInfo();
     }
   }
 }
 
-bool inventoryContains(vector<Room::Item*>& inventory, char* itemName, int &index)
+//if contains item, returns its index. if not, returns -1
+int inventoryContains(vector<Room::Item*>& inventory, const char* itemName)
 {
   for(int i = 0; i < inventory.size(); i++)
   {
     if(strcmp(inventory[i]->name, itemName) == 0)
     {
-      return true;
-      index = i;
+      return i;
     }
   }
-  return false;
+  return -1;
+}
+
+void printInventory(vector<Room::Item*> inventory)
+{
+  if(inventory.size() >  0)
+  {
+    cout << "Your inventory contains: ";
+    for(int i = 0; i < inventory.size(); i++)
+    {
+      if(i == inventory.size() - 1)
+      {
+        cout << inventory[i]->name;
+      }
+      else
+      {
+        cout << inventory[i]->name << ", ";
+      }
+    }
+    cout << endl;
+  }
+  else
+  {
+    cout << "there are no items in your inventory" << endl;
+  }
 }

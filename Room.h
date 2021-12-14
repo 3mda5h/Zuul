@@ -22,14 +22,14 @@ class Room
     Room(const char* name, const char* description);
     char* roomName;
     char* roomDescription;
-    int index;
     map<const char*, Room*> roomMap;
     vector<Room::Item*> itemsInRoom;
     vector<const char*> roomExits;
     void setExit(const char* direction, Room* room);
     void printInfo();
     vector<Room::Item*> getItems();
-    bool itemRemoved(char* itemName);
+    void removeItem(int index);
+    int containsItem(char* itemName);
     void addItem(Room::Item* item);
 };
 
