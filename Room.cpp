@@ -6,10 +6,8 @@
 
 using namespace std;
 
-Room::Room(const char* name, const char* description)
+Room::Room(const char* description)
 {
-  roomName = new char[100];
-  strcpy(roomName, name);
   roomDescription = new char[1000];
   strcpy(roomDescription, description);
   map<const char*, Room*> roomMap;
@@ -17,6 +15,7 @@ Room::Room(const char* name, const char* description)
   vector<const char*> roomExits;
 }
 
+//adds key (cardinal direction) with its associated value (room) to map
 void Room::setExit(const char* direction, Room* room)
 {
   roomMap.emplace(direction, room);
@@ -26,21 +25,8 @@ void Room::setExit(const char* direction, Room* room)
 //prints room name, description, exits, and items
 void Room::printInfo()
 {
-  cout << "You are in " << roomName << endl;
-  cout << roomDescription << endl;
-  cout << "Exits: ";
-  for(int i = 0; i < roomExits.size(); i++)
-  {
-    if(i == roomExits.size() - 1) //last item no comma hehehehe
-    {
-      cout << roomExits[i];
-    }
-    else
-    {
-      cout << roomExits[i] << ", ";
-    }
-  }
-  cout << endl;
+  cout << roomDescription << endl; 
+  //print rooms 
   cout << "Items: ";
   if(itemsInRoom.size() > 0)
   {
@@ -61,8 +47,30 @@ void Room::printInfo()
     cout << "none";
   }
   cout << endl;
+  //print exits
+  cout << "Exits: ";
+  if(roomExits.size() > 0)
+  {
+    for(int i = 0; i < roomExits.size(); i++)
+    {
+      if(i == roomExits.size() - 1) //last item no comma hehehehehe
+      {
+        cout << roomExits[i];
+      }
+      else
+      {
+        cout << roomExits[i] << ", ";
+      }
+    }
+  }
+  else
+  {
+    cout << "none";
+  }
+  cout << endl;
 }
 
+//returns vector of items in room
 vector<Room::Item*> Room::getItems()
 {
   return itemsInRoom;

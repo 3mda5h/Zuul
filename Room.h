@@ -19,8 +19,7 @@ class Room
     {
       char name[100];
     };
-    Room(const char* name, const char* description);
-    char* roomName;
+    Room(const char* description);
     char* roomDescription;
     map<const char*, Room*> roomMap;
     vector<Room::Item*> itemsInRoom;

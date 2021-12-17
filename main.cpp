@@ -3,15 +3,17 @@
 #include <vector>
 #include <map>
 #include <cstring>
+#include <iterator>
 
 using namespace std;
 
 Room::Item* newItem(const char* name);
 void pickUpItem(Room* currentRoom, vector<Room::Item*>& inventory);
 void dropItem(Room* currentRoom, vector<Room::Item*>& inventory);
-void move(Room* currentRoom);
+void move(Room*& currentRoom);
 int inventoryContains(vector<Room::Item*>& inventory, const char* itemName);
 void printInventory(vector<Room::Item*> inventory);
+void upperCase(char*& input);
 
 int main() 
 {
@@ -22,30 +24,49 @@ int main()
   char input[100];
  
   //create rooms
-  Room* oneTwenty = new Room("room 1-20", "You are haning out in room 1-20. You are 100% doing C++ programming and not bio homework.");
-  Room* oneHall = new Room("one hall", "extremely crowded");
-  Room* oneNine = new Room("1-9", "you enter the room and instantly run away screaming. IB biology is very scary");
+  Room* oneTwenty = new Room("You are in room 1-20. You are 100% doing C++ programming and not bio homework.");
+  Room* oneHall = new Room("You are one hall, an endless sea of humans.");
+  Room* oneNine = new Room("You have entered IB biology O_O");
+  Room* kHall = new Room("You are at the K Hall - one hall intersection. Hey wait... is that money on the ground?");
+  Room* eThree = new Room("You are in Room E3, 3rd period History. Is that a donation box for the winter holiday drive? :O");
   
   //set exits
-  oneTwenty->setExit("NORTH", oneHall); //idk if it's actually north
-  
+  oneTwenty->setExit("WEST", oneHall); 
+  oneHall->setExit("EAST", oneTwenty);
+  oneHall->setExit("NORTH", kHall);
+  kHall->setExit("SOUTH", oneHall);
+  kHall->setExit("EAST", oneNine);
+
   //set items
   oneTwenty->addItem(newItem("COMPUTER"));
+  kHall->addItem(newItem("MONEY"));
+  oneNine->addItem(newItem("SUFFERING"));
   
-  currentRoom = oneTwenty;
+  currentRoom = kHall;
   currentRoom->printInfo();
   do
   {
     //win & lose conditions hehehehe
-    if(currentRoom != oneTwenty && inventoryContains(inventory, "COMPUTER") < -1)
+    if(currentRoom != oneTwenty && inventoryContains(inventory, "COMPUTER") > -1)
     {
-      cout << "you just stole a computer from 1-20!! D:< That is a crime. You lose" << endl;
-      running = false;
+      cout << "Wait... you just stole a computer from 1-20 D:< That's mean. You lose." << endl;
+      return(0);
+    }
+    if(currentRoom == oneNine)
+    {
+      cout << "There is no escape from IB bio. You are trapped until the end of time." << endl;
+      return(0);
+    }
+    char c[10] = "MONEY"; //doing this cause c++ is a stinky face and wont let me pass in a string literal 
+    if(eThree->containsItem(c) > -1)
+    {
+      cout << "You donated to the holiday drive! You win :D";
+      return(0);
     }
     do
     {
       //for case sensitivity as usual
-      cout << "type PICK UP, DROP, MOVE, INVENTORY or QUIT" << endl;
+      cout << "Type PICK UP, DROP, MOVE, INVENTORY or QUIT" << endl;
       cin.getline(input, 100);
       for(int i = 0; i < strlen(input); i++)
       {
@@ -87,7 +108,7 @@ Room::Item* newItem(const char* itemName)
 void pickUpItem(Room* currentRoom, vector<Room::Item*>& inventory)
 {
   char itemName[100];
-  cout << "enter the name of the item you want to pick up" << endl;
+  cout << "Which item?" << endl;
   cin.getline(itemName, 100);
   for(int i = 0; i < strlen(itemName); i++) //function for this?
   {
@@ -98,41 +119,53 @@ void pickUpItem(Room* currentRoom, vector<Room::Item*>& inventory)
   {
     inventory.push_back(currentRoom->getItems()[index]);
     currentRoom->removeItem(index);
-    cout << "item picked up" << endl;
+    cout << "Item picked up." << endl;
     return;
   }
-  cout << "this item does not exist" << endl;
+  cout << "This item does not exist D:" << endl;
 }
 
 //removes item from player inventory, adds it to the current room
 void dropItem(Room* currentRoom, vector<Room::Item*>& inventory)
 {
   char itemName[100];
-  cout << "enter the name of the item you want to drop" << endl;
+  cout << "Which item?" << endl;
   cin.getline(itemName, 100);
+  for(int i = 0; i < strlen(itemName); i++) //function for this?
+  {
+    itemName[i] = toupper(itemName[i]);
+  }
   int index = inventoryContains(inventory, itemName);
   if( index > -1)
   {
     inventory.erase(inventory.begin() + index);
     currentRoom->addItem(inventory[index]);
+    cout << "Item dropped." << endl;
     return;
   }
-  cout << "this item is not in your inventory" << endl;
+  cout << "This item is not in your inventory D:" << endl;
 }
 
 //changes current room based on exit chosen
-void move(Room* currentRoom)
+void move(Room*& currentRoom)
 {
   char input[100];
-  cout << "which exit?" << endl;
+  cout << "Which exit?" << endl;
   cin.getline(input, 100);
-  for(int i = 0; i < currentRoom->roomExits.size(); i++)
+  for(int i = 0; i < strlen(input); i++) //function for this?
   {
-    if(strcmp(currentRoom->roomExits[i], input) == 0)
+    input[i] = toupper(input[i]);
+  }
+  map<const char*, Room*> exits;
+  exits = currentRoom->roomMap;
+  map<const char*, Room*>::iterator it;
+  for(it = exits.begin(); it != exits.end(); it++)
+  {
+    char temp[100];
+    strcpy(temp, it->first);
+    if(strcmp(temp, input) == 0)
     {
-      map<const char*, Room*> temp;
-      temp = currentRoom->roomMap;
-      currentRoom = temp.at(input);
+      currentRoom = it->second;
       currentRoom->printInfo();
     }
   }
@@ -141,9 +174,11 @@ void move(Room* currentRoom)
 //if contains item, returns its index. if not, returns -1
 int inventoryContains(vector<Room::Item*>& inventory, const char* itemName)
 {
+  char temp[100];
+  strcpy(temp, itemName); //convert const char to char array so it doesn't get angry
   for(int i = 0; i < inventory.size(); i++)
   {
-    if(strcmp(inventory[i]->name, itemName) == 0)
+    if(strcmp(inventory[i]->name, temp) == 0)
     {
       return i;
     }
@@ -171,6 +206,15 @@ void printInventory(vector<Room::Item*> inventory)
   }
   else
   {
-    cout << "there are no items in your inventory" << endl;
+    cout << "There are no items in your inventory." << endl;
+  }
+}
+
+//idk if ill use this
+void upperCase(char*& input)
+{
+  for(int i = 0; i < strlen(input); i++)
+  {
+    input[i] = toupper(input[i]);
   }
 }
