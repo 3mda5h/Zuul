@@ -1,3 +1,6 @@
+//zuul - text-based adventure game, explore rooms and pick up + drop items 
+//ways to win:   1) get money from khall then donate it in e3,   2) pick up the banana peel in the cafeteria and throw it away in the lower commons, or   3) get library book from g4 and return to the media center
+//Emily MacPherson, 12/18/21
 #include <iostream>
 #include "Room.h"
 #include <vector>
@@ -27,22 +30,50 @@ int main()
   Room* oneTwenty = new Room("You are in room 1-20. You are 100% doing C++ programming and not bio homework.");
   Room* oneHall = new Room("You are one hall, an endless sea of humans.");
   Room* oneNine = new Room("You have entered IB biology O_O");
-  Room* kHall = new Room("You are at the K Hall - one hall intersection. Hey wait... is that money on the ground?");
+  Room* kHall = new Room("You are at the K hall-one hall intersection. Hey wait... is that a dollar on the ground?");
   Room* eThree = new Room("You are in Room E3, 3rd period History. Is that a donation box for the winter holiday drive? :O");
+  Room* fHall = new Room("You are at the F hall-one hall intersection. Nothing much going on here.");
+  Room* cafeteria = new Room("You are in the cafeteria. You stepped on a banana peel :(");
+  Room* lowerCommons = new Room("You are in the lower commons. Hey, there's a trash can.");
+  Room* gHall = new Room("You are at the G hall-one hall intersection.");
+  Room* gSix = new Room("You are in Spanish calss. Did you leave your library book in here? :o");
+  Room* mediaCenter = new Room("You are in the media center.");
+  Room* jHall = new Room("You are in J hall");
+  Room* threeEleven = new Room("You are in room 3-11, health class");
   
   //set exits
   oneTwenty->setExit("WEST", oneHall); 
   oneHall->setExit("EAST", oneTwenty);
   oneHall->setExit("NORTH", kHall);
+  oneHall->setExit("SOUTH", fHall);
+  oneHall->setExit("WEST", cafeteria);
+  cafeteria->setExit("NORTH", lowerCommons);
+  lowerCommons->setExit("SOUTH", cafeteria);
+  lowerCommons->setExit("WEST", jHall);
+  jHall->setExit("EAST", lowerCommons);
+  jHall->setExit("NORTH", threeEleven);
+  threeEleven->setExit("SOUTH", jHall);
   kHall->setExit("SOUTH", oneHall);
   kHall->setExit("EAST", oneNine);
+  kHall->setExit("NORTH", mediaCenter);
+  mediaCenter->setExit("SOUTH", kHall);
+  fHall->setExit("NORTH", oneHall);
+  fHall->setExit("EAST", eThree);
+  fHall->setExit("SOUTH", gHall);
+  eThree->setExit("SOUTH", fHall);
+  gHall->setExit("NORTH", fHall);
+  gHall->setExit("EAST", gSix);
+  gSix->setExit("WEST", gHall);
 
   //set items
   oneTwenty->addItem(newItem("COMPUTER"));
-  kHall->addItem(newItem("MONEY"));
+  kHall->addItem(newItem("DOLLAR"));
   oneNine->addItem(newItem("SUFFERING"));
+  cafeteria->addItem(newItem("BANANA PEEL"));
+  gSix->addItem(newItem("BOOK"));
+
   
-  currentRoom = kHall;
+  currentRoom = oneTwenty;
   currentRoom->printInfo();
   do
   {
@@ -57,10 +88,25 @@ int main()
       cout << "There is no escape from IB bio. You are trapped until the end of time." << endl;
       return(0);
     }
-    char c[10] = "MONEY"; //doing this cause c++ is a stinky face and wont let me pass in a string literal 
-    if(eThree->containsItem(c) > -1)
+    if(currentRoom == threeEleven)
+    {
+      cout << "You instantly run away screaming. You do not like health calss." << endl;
+      currentRoom = jHall;
+      currentRoom->printInfo();
+    }
+    if(eThree->containsItem("DOLLAR") > -1)
     {
       cout << "You donated to the holiday drive! You win :D";
+      return(0);
+    }
+    if(mediaCenter->containsItem("BOOK") > -1)
+    {
+      cout << "You returned your library book! You win :D" << endl;
+      return(0);
+    }
+    if(lowerCommons->containsItem("BANANA PEEL") > -1)
+    {
+      cout << "Yay, you threw away the gross banana peel. You win :D" << endl;
       return(0);
     }
     do
@@ -167,8 +213,10 @@ void move(Room*& currentRoom)
     {
       currentRoom = it->second;
       currentRoom->printInfo();
+      return;
     }
   }
+  cout << "This exit doesn't exist D:" << endl;
 }
 
 //if contains item, returns its index. if not, returns -1

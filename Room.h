@@ -9,7 +9,7 @@ using namespace std;
 
 struct Item
 {
-  char name[100];
+  const char name[100];
 };
 
 class Room
@@ -28,7 +28,7 @@ class Room
     void printInfo();
     vector<Room::Item*> getItems();
     void removeItem(int index);
-    int containsItem(char* itemName);
+    int containsItem(const char* itemName);
     void addItem(Room::Item* item);
 };
 

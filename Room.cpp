@@ -82,7 +82,7 @@ void Room::removeItem(int index)
   itemsInRoom.erase(itemsInRoom.begin() + index);
 }
 
-int Room::containsItem(char* itemName) //if contains item, returns its index. if not, returns -1. maybe this is a stupid way of doing this but the thing is I don't really care :D
+int Room::containsItem(const char* itemName) //if contains item, returns its index. if not, returns -1. maybe this is a stupid way of doing this but the thing is I don't really care :D
 {
   for(int i = 0; i < itemsInRoom.size(); i++)
   {
