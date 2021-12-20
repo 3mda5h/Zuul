@@ -1,6 +1,7 @@
 #include <iostream>
 #include "Room.h"
 #include <vector>
+#include <iterator>
 #include <map>
 #include <cstring>
 
@@ -25,7 +26,9 @@ void Room::setExit(const char* direction, Room* room)
 //prints room name, description, exits, and items
 void Room::printInfo()
 {
+  cout << "-----------------------" << endl;
   cout << roomDescription << endl; 
+  
   //print rooms 
   cout << "Items: ";
   if(itemsInRoom.size() > 0)
@@ -47,6 +50,7 @@ void Room::printInfo()
     cout << "none";
   }
   cout << endl;
+  
   //print exits
   cout << "Exits: ";
   if(roomExits.size() > 0)
@@ -82,8 +86,8 @@ void Room::removeItem(int index)
   itemsInRoom.erase(itemsInRoom.begin() + index);
 }
 
-int Room::containsItem(const char* itemName) //if contains item, returns its index. if not, returns -1. maybe this is a stupid way of doing this but the thing is I don't really care :D
-{
+//if contains item, returns its index. if not, returns -1. maybe this is a stupid way of doing this but the thing is I don't really care :D
+int Room::containsItem(const char* itemName) {
   for(int i = 0; i < itemsInRoom.size(); i++)
   {
     if(strcmp(itemsInRoom[i]->name, itemName) == 0)
@@ -94,6 +98,7 @@ int Room::containsItem(const char* itemName) //if contains item, returns its ind
   return -1;
 }
 
+//adds item to vector of items in room
 void Room::addItem(Room::Item* item)
 {
   itemsInRoom.push_back(item);

@@ -1,6 +1,6 @@
 //zuul - text-based adventure game, explore rooms and pick up + drop items 
-//ways to win:   1) get money from khall then donate it in e3,   2) pick up the banana peel in the cafeteria and throw it away in the lower commons, or   3) get library book from g4 and return to the media center
-//Emily MacPherson, 12/18/21
+//ways to win:   1) get money from khall then donate it in e3,   2) pick up the banana peel in the cafeteria and throw it away in the lower commons,   3) get library book from g4 and return to the media center, or   4) return basket ball in two hall to the gym 
+//Emily MacPherson, 12/19/21
 #include <iostream>
 #include "Room.h"
 #include <vector>
@@ -28,18 +28,20 @@ int main()
  
   //create rooms
   Room* oneTwenty = new Room("You are in room 1-20. You are 100% doing C++ programming and not bio homework.");
-  Room* oneHall = new Room("You are one hall, an endless sea of humans.");
+  Room* oneHall = new Room("You are in one hall, an endless sea of humans.");
   Room* oneNine = new Room("You have entered IB biology O_O");
   Room* kHall = new Room("You are at the K hall-one hall intersection. Hey wait... is that a dollar on the ground?");
   Room* eThree = new Room("You are in Room E3, 3rd period History. Is that a donation box for the winter holiday drive? :O");
   Room* fHall = new Room("You are at the F hall-one hall intersection. Nothing much going on here.");
-  Room* cafeteria = new Room("You are in the cafeteria. You stepped on a banana peel :(");
+  Room* cafeteria = new Room("You are in the cafeteria. Is that a banana peel you just stepped on?");
   Room* lowerCommons = new Room("You are in the lower commons. Hey, there's a trash can.");
   Room* gHall = new Room("You are at the G hall-one hall intersection.");
-  Room* gSix = new Room("You are in Spanish calss. Did you leave your library book in here? :o");
+  Room* gSix = new Room("Bienvenido! You are in Spanish class. Did you leave your library book in here? :o");
   Room* mediaCenter = new Room("You are in the media center.");
-  Room* jHall = new Room("You are in J hall");
-  Room* threeEleven = new Room("You are in room 3-11, health class");
+  Room* jHall = new Room("You are in J hall.");
+  Room* threeEleven = new Room("You are in room 3-11, health class.");
+  Room* gym = new Room("You are in the gym. A bunch of loud tall people are playing basketball.");
+  Room* twoHall = new Room("You are in two hall.");
   
   //set exits
   oneTwenty->setExit("WEST", oneHall); 
@@ -48,11 +50,16 @@ int main()
   oneHall->setExit("SOUTH", fHall);
   oneHall->setExit("WEST", cafeteria);
   cafeteria->setExit("NORTH", lowerCommons);
+  cafeteria->setExit("EAST", oneHall);
+  cafeteria->setExit("WEST", twoHall);
   lowerCommons->setExit("SOUTH", cafeteria);
-  lowerCommons->setExit("WEST", jHall);
-  jHall->setExit("EAST", lowerCommons);
-  jHall->setExit("NORTH", threeEleven);
-  threeEleven->setExit("SOUTH", jHall);
+  twoHall->setExit("WEST", jHall);
+  twoHall->setExit("EAST", cafeteria);
+  jHall->setExit("EAST", twoHall);
+  jHall->setExit("NORTH", gym);
+  jHall->setExit("WEST", threeEleven);
+  gym->setExit("SOUTH", jHall);
+  threeEleven->setExit("EAST", jHall);
   kHall->setExit("SOUTH", oneHall);
   kHall->setExit("EAST", oneNine);
   kHall->setExit("NORTH", mediaCenter);
@@ -60,7 +67,7 @@ int main()
   fHall->setExit("NORTH", oneHall);
   fHall->setExit("EAST", eThree);
   fHall->setExit("SOUTH", gHall);
-  eThree->setExit("SOUTH", fHall);
+  eThree->setExit("WEST", fHall);
   gHall->setExit("NORTH", fHall);
   gHall->setExit("EAST", gSix);
   gSix->setExit("WEST", gHall);
@@ -71,7 +78,7 @@ int main()
   oneNine->addItem(newItem("SUFFERING"));
   cafeteria->addItem(newItem("BANANA PEEL"));
   gSix->addItem(newItem("BOOK"));
-
+  twoHall->addItem(newItem("BASKETBALL"));
   
   currentRoom = oneTwenty;
   currentRoom->printInfo();
@@ -85,12 +92,12 @@ int main()
     }
     if(currentRoom == oneNine)
     {
-      cout << "There is no escape from IB bio. You are trapped until the end of time." << endl;
+      cout << "There is no escape from IB bio. You are trapped until the end of time. You lose." << endl;
       return(0);
     }
     if(currentRoom == threeEleven)
     {
-      cout << "You instantly run away screaming. You do not like health calss." << endl;
+      cout << "You instantly run away screaming. You do not like health class." << endl;
       currentRoom = jHall;
       currentRoom->printInfo();
     }
@@ -106,15 +113,19 @@ int main()
     }
     if(lowerCommons->containsItem("BANANA PEEL") > -1)
     {
-      cout << "Yay, you threw away the gross banana peel. You win :D" << endl;
+      cout << "Yay, you threw away the banana peel. You win :D" << endl;
+      return(0);
+    }
+    if(gym->containsItem("BASKETBALL") > -1)
+    {
+      cout << "You returned the basket ball to the gym. You win :D" << endl;
       return(0);
     }
     do
     {
-      //for case sensitivity as usual
       cout << "Type PICK UP, DROP, MOVE, INVENTORY or QUIT" << endl;
       cin.getline(input, 100);
-      for(int i = 0; i < strlen(input); i++)
+      for(int i = 0; i < strlen(input); i++) //for case sensitivity 
       {
         input[i] = toupper(input[i]);
       }
@@ -138,11 +149,11 @@ int main()
       {
         running = false;
       }
-    } while (strcmp(input, "PICK UP") != 0 && strcmp(input, "DROP") != 0 && strcmp(input, "MOVE") != 0 && strcmp(input, "INVENTORY") != 0 && strcmp(input, "QUIT"));
-  } while(running == true);
+    } while (strcmp(input, "PICK UP") != 0 && strcmp(input, "DROP") != 0 && strcmp(input, "MOVE") != 0 && strcmp(input, "INVENTORY") != 0 && strcmp(input, "QUIT")); //keep prompting user until valid command is inputed
+  } while(running == true); 
 } 
 
-//creates a new item
+//creates a new item with passed-in name
 Room::Item* newItem(const char* itemName)
 {
   Room::Item* item = new Room::Item();
@@ -153,10 +164,15 @@ Room::Item* newItem(const char* itemName)
 //adds item to player inventory, removes it from the room 
 void pickUpItem(Room* currentRoom, vector<Room::Item*>& inventory)
 {
+  if(currentRoom->getItems().size() == 0) //if room has no items
+  {
+    cout << "There's nothing to pick up in this room." << endl;
+    return;
+  }
   char itemName[100];
   cout << "Which item?" << endl;
   cin.getline(itemName, 100);
-  for(int i = 0; i < strlen(itemName); i++) //function for this?
+  for(int i = 0; i < strlen(itemName); i++)
   {
     itemName[i] = toupper(itemName[i]);
   }
@@ -174,18 +190,24 @@ void pickUpItem(Room* currentRoom, vector<Room::Item*>& inventory)
 //removes item from player inventory, adds it to the current room
 void dropItem(Room* currentRoom, vector<Room::Item*>& inventory)
 {
+  if(inventory.size() == 0) //if inventory is empty
+  {
+    cout << "There's nothing in your inventory to drop." << endl;
+    return;
+  }
   char itemName[100];
   cout << "Which item?" << endl;
   cin.getline(itemName, 100);
-  for(int i = 0; i < strlen(itemName); i++) //function for this?
+  for(int i = 0; i < strlen(itemName); i++) 
   {
     itemName[i] = toupper(itemName[i]);
   }
   int index = inventoryContains(inventory, itemName);
-  if( index > -1)
+  if(index > -1)
   {
+    Room::Item* item = inventory[index];
     inventory.erase(inventory.begin() + index);
-    currentRoom->addItem(inventory[index]);
+    currentRoom->addItem(item);
     cout << "Item dropped." << endl;
     return;
   }
@@ -198,7 +220,7 @@ void move(Room*& currentRoom)
   char input[100];
   cout << "Which exit?" << endl;
   cin.getline(input, 100);
-  for(int i = 0; i < strlen(input); i++) //function for this?
+  for(int i = 0; i < strlen(input); i++) 
   {
     input[i] = toupper(input[i]);
   }
@@ -207,9 +229,9 @@ void move(Room*& currentRoom)
   map<const char*, Room*>::iterator it;
   for(it = exits.begin(); it != exits.end(); it++)
   {
-    char temp[100];
-    strcpy(temp, it->first);
-    if(strcmp(temp, input) == 0)
+    char c[100];
+    strcpy(c, it->first); //convert const char to char[100] so it can compare to input
+    if(strcmp(c, input) == 0)
     {
       currentRoom = it->second;
       currentRoom->printInfo();
@@ -219,7 +241,7 @@ void move(Room*& currentRoom)
   cout << "This exit doesn't exist D:" << endl;
 }
 
-//if contains item, returns its index. if not, returns -1
+//if inventory contains item, returns its index. if not, returns -1
 int inventoryContains(vector<Room::Item*>& inventory, const char* itemName)
 {
   char temp[100];
@@ -234,6 +256,7 @@ int inventoryContains(vector<Room::Item*>& inventory, const char* itemName)
   return -1;
 }
 
+//prints out all items currently in player inventory
 void printInventory(vector<Room::Item*> inventory)
 {
   if(inventory.size() >  0)
@@ -241,7 +264,7 @@ void printInventory(vector<Room::Item*> inventory)
     cout << "Your inventory contains: ";
     for(int i = 0; i < inventory.size(); i++)
     {
-      if(i == inventory.size() - 1)
+      if(i == inventory.size() - 1) //last item no comma heh heh
       {
         cout << inventory[i]->name;
       }
@@ -255,14 +278,5 @@ void printInventory(vector<Room::Item*> inventory)
   else
   {
     cout << "There are no items in your inventory." << endl;
-  }
-}
-
-//idk if ill use this
-void upperCase(char*& input)
-{
-  for(int i = 0; i < strlen(input); i++)
-  {
-    input[i] = toupper(input[i]);
   }
 }
